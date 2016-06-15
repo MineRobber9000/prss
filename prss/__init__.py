@@ -19,7 +19,7 @@ class PageRSS:
 
 	"""Generates RSS feed."""
 	def make(self):
-		contents = "<?xml version='1.0'><rss version='2.0'><channel><title>{}</title><link>{}</link><description>{}</description><pubDate>{}</pubDate>".format(self.title,self.link,self.description,self.pubDate)
+		contents = "<?xml version='1.0' ?><rss version='2.0'><channel><title>{}</title><link>{}</link><description>{}</description><pubDate>{}</pubDate>".format(self.title,self.link,self.description,self.pubDate)
 		for i in self.items:
 			contents += "<item><title>{}</title><link>{}</link><description>{}</description></item>".format(i['title'],i['link'],i['desc'])
 		contents += "</channel></rss>"
