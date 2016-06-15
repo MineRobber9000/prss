@@ -1,50 +1,41 @@
 Tutorial
 ========
 
-Here is a simple example of how to take the latest 20 posts of an NNTP newsgroup and makes them an RSS feed.
+Here is a simple example of how to take the latest 20 commits of a GitHub repository and makes an RSS feed.
 
-First, we need access to both NNTPLib, the time module, and PRSS. Let's get that now: ::
+First, we need access to both the requests library, the time module, and PRSS. Let's get that now: ::
 
     import nntplib,prss,time
 
-Now that we have that, I would suggest getting the connection. This example is for the "gmane.comp.python.committers" newsgroup: ::
+Now that we have that, I would suggest getting the commit list. This example is for the "sonicretro/s2disasm" repository: ::
 
-    n = nntplib.NNTP('news.gmane.org')
+    n = requests.get('http://api.github.com/repos/sonicretro/s2disasm/commits')
 
 Next, we can instantiate the PageRSS class: ::
 
-    r = prss.PageRSS("Python Committers Email List Latest 20","http://blog.gmane.org/gmane.comp.python.committers","The latest 20 posts from the CPython committers email list.",time.localtime())
+    r = prss.PageRSS("Latest Commits to sonicretro/s2disasm","https://github.com/sonicretro/s2disasm","The latest commits from the Sonic Retro Sonic the Hedgehog 2 disassembly.",time.localtime())
 
-Now we need to get the details on the latest 20 posts, which we can get by first getting the details of the newsgroup: ::
+Now we need to get the details on the latest commits, which is simple enough: ::
 
-    resp, count, first, last, name = n.group('gmane.comp.python.committers')
+    lc = n.json()
+    for c in lc:
+        r.addItem(c['commit']['message'],c['html_url'],'"{}" by {} ({})'.format(c['commit']['message'],c['commit']['author']['name'],c['tree']['sha']))
 
-Then we must get the last 20 posts: ::
-
-    resp, subs = n.xhdr('subject',(last-20)+"-"+last)
-    for id, sub in subs:
-        resp, body = n.body(id)
-        r.addItem(sub,"http://permalink.gmane.org/gmane.comp.python.commiters/{!s}".format(id),body)
-
-And finally, we must put the RSS in a file (example is "~/public_html/gcpc.xml"): ::
+And finally, we must put the RSS in a file (example is "~/public_html/srs2.xml"): ::
 
     import os
-    with open(os.path.expanduser("~/public_html/gcpc.xml"),"wb") as f:
+    with open(os.path.expanduser("~/public_html/srs2.xml"),"wb") as f:
         f.write(r.make())
-
-Now we can close the NNTP connection with ``n.auit()``.
 
 The full code should look somewhat like: ::
 
-    import nntplib,prss,time
-    n = nntplib.NNTP("news.gmane.org")
-    r = prss.PageRSS("Python Committers Email List Latest 20","http://blog.gmane.org/gmane.comp.python.committers","The latest 20 posts from the CPython committers email list.",time.localtime())
-    resp, count, first, last, name = n.group("gmane.comp.python.committers")
-    subs = n.xhdr("subject",(last-20)+"-"+last)
-    for id, sub in subs:
-        resp, body = n.body(id)
-        r.addItem(sub,"http://permalink.gmane.org/gmane.comp.python.committers/{!s}".format(id),body)
+    import requests,prss,time
+    n = requests.get("https://api.github.com/repos/sonicretro/s2disasm/commits")
+    r = prss.PageRSS("Latest Commits from sonicretro/s2disasm","http://github.com/sonicretro/s2disasm","The latest commits from the Sonic Retro Sonic the Hedgehog 2 disassembly.",time.localtime())
+    lc = n.json()
+    for c in lc:
+        r.addItem(c['commit']['message'],c['html_url'],'"{}" by {} ({})'.format(c['commit']['message'],c['commit']['author']['name'],c['tree']['sha']))
     import os
-    with open(os.path.expanduser("~/public_html/gcpc.xml"),'wb') as f:
+    with open(os.path.expanduser("~/public_html/srs2.xml"),'wb') as f:
         f.write(r.make())
     n.quit()
