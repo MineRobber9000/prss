@@ -5,7 +5,7 @@ Here is a simple example of how to take the latest 20 commits of a GitHub reposi
 
 First, we need access to both the requests library, the time module, and PRSS. Let's get that now: ::
 
-    import nntplib,prss,time
+    import requests,prss,time
 
 Now that we have that, I would suggest getting the commit list. This example is for the "sonicretro/s2disasm" repository: ::
 
