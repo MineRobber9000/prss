@@ -2,7 +2,7 @@
 import time
 class PageRSS:
 	"""A helper class for creating a page's RSS."""
-	def __init__(self, title, description, link, date):
+	def __init__(self, title, description, link, date=time.localtime()):
 		self.items = []
 		self.title = title
 		self.description = description

@@ -8,7 +8,7 @@ The main class of the module.
 * ``title``: The title of your page.
 * ``link``: The link to your page on the internet.
 * ``description``: The description of your page.
-* ``pubDate``: The reults of ``time.localtime()``.
+* ``pubDate``: (optional) A ``time.struct_time`` object corresponding to the publishing date.
 
 ``PageRSS.addItem(title,link,description)``
 
